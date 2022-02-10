@@ -7,6 +7,7 @@ Created on Sun Feb  6 16:12:57 2022
 
 from matplotlib import pyplot as plt
 import math
+import pygame
 
 '''
 Generate equally spaced floating point
@@ -31,20 +32,17 @@ def draw_graph(x, y):
     plt.title('Projectile motion of a ball')
 
 
-def draw_trajectory(u, theta):
+def draw_trajectory(u, theta, gravity, xPositions = [], yPositions = []):
     theta = math.radians(theta)
-    g = 9.8
     # Time of flight
-    t_flight = 2 * u * math.sin(theta) / g
+    t_flight = 2 * u * math.sin(theta) / gravity
     # Find time intervals
-    intervals = frange(0, t_flight, 0.001) 
-    # List of x and y coordinates
-    x = []
-    y = []
+    intervals = frange(0, t_flight, 0.01) 
+
     for t in intervals:
-        x.append(u*math.cos(theta)*t)
-        y.append(u*math.sin(theta)*t - 0.5*g*t*t)
-        draw_graph(x, y)
+        xPositions.append(u*math.cos(theta)*t)
+        yPositions.append(u*math.sin(theta)*t - 0.5*gravity*t*t)
+    #draw_graph(xPositions, yPositions)
 
 
 #draw_trajectory(25, 60)
@@ -52,14 +50,40 @@ def draw_trajectory(u, theta):
 
 
 # List of three different initial velocities
+'''
 u_list = [20, 40, 60]
 theta = 45
+gravity = 9.8
 for u in u_list:
-    draw_trajectory(u, theta)
+    draw_trajectory(u, theta, gravity)
 
  # Add a legend and show the graph
 plt.legend(['20', '40', '60'])
-plt.show() 
+plt.show()
+'''
+
+
+pygame.init()
+screen = pygame.display.set_mode((1024, 800))
+clock = pygame.time.Clock()
+x = []
+y = []
+
+draw_trajectory(70, 50, 9.8, x, y)
+
+running = True
+while running:
+    tick = clock.tick(60) / 1000  # Returns milliseconds between each call to 'tick'. The convert time to seconds.
+    #screen.fill((0,0,0))  # Fill the screen with background color.
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            
+    if(len(x) > 0 and len(y)  > 0): 
+        pygame.draw.rect(screen, (255, 255, 255), (x.pop(0), y.pop(0), 6, 6))
+    pygame.display.update()
+    
+pygame.quit()
 
 '''
 # Find time intervals
