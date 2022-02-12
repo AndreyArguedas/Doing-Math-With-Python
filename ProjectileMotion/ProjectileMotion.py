@@ -4,8 +4,6 @@ Created on Sun Feb  6 16:12:57 2022
 
 @author: Andrey
 """
-
-from matplotlib import pyplot as plt
 import math
 import pygame
 
@@ -21,17 +19,6 @@ def frange(start, final, increment):
     return numbers
 
 
-'''
-Draw the trajectory of a body in projectile motion
-'''
-
-def draw_graph(x, y):
-    plt.plot(x, y)
-    plt.xlabel('x-coordinate')
-    plt.ylabel('y-coordinate')
-    plt.title('Projectile motion of a ball')
-
-
 def draw_trajectory(u, theta, gravity, xPositions = [], yPositions = []):
     theta = math.radians(theta)
     # Time of flight
@@ -43,26 +30,40 @@ def draw_trajectory(u, theta, gravity, xPositions = [], yPositions = []):
         xPositions.append(u * math.cos(theta) * t)
         yPositions.append(u * math.sin(theta) * t - 0.5 * gravity * t *t)
 
-
+def coordinatesText(surf, xCord, yCord, font):
+    labelX = font.render("X coordinate:" + str(xCord), 1, (255,0,0))
+    labelY = font.render("Y coordinate:" + str(yCord), 1, (255,0,0))
+    #change its background color
+    surf.fill((0,0,0))
+    surf.blit(labelX, (10, 10))
+    surf.blit(labelY, (10, 40))
 
 pygame.init()
+
 width = 1024
 height = 800
+FPS = 60
+
+velocity = 90
+angle = 60
+gravity = 9.8
+
 screen = pygame.display.set_mode((width, height))
-myfont = pygame.font.SysFont("Comic Sans MS", 20)
+coordinatesFont = pygame.font.SysFont("Comic Sans MS", 20)
 textSurface = pygame.Surface((350, 80))
 
 
 clock = pygame.time.Clock()
 
+#Lists to store multiple coordinates
 x = []
 y = []
 
-draw_trajectory(90, 60, 9.8, x, y)
+draw_trajectory(velocity, angle, gravity, x, y)
 
 running = True
 while running:
-    tick = clock.tick(60) / 1000  # Returns milliseconds between each call to 'tick'. The convert time to seconds.
+    #tick = clock.tick(FPS) / 1000  # Returns milliseconds between each call to 'tick'. The convert time to seconds.
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -70,12 +71,7 @@ while running:
     if(len(x) > 0 and len(y)  > 0): 
         xCoordinate = x.pop(0)
         yCoordinate = y.pop(0)
-        labelX = myfont.render("X coordinate:" + str(xCoordinate), 1, (255,0,0))
-        labelY = myfont.render("Y coordinate:" + str(yCoordinate), 1, (255,0,0))
-        #change its background color
-        textSurface.fill((0,0,0))
-        textSurface.blit(labelX, (10, 10))
-        textSurface.blit(labelY, (10, 40))
+        coordinatesText(textSurface, xCoordinate, yCoordinate, coordinatesFont)
         screen.blit(textSurface, (0, 0))
         pygame.draw.rect(screen, (0, 255, 0), (xCoordinate, height - yCoordinate, 15, 15))
     pygame.display.flip()
