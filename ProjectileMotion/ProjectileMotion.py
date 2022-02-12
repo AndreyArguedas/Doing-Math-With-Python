@@ -6,8 +6,6 @@ Created on Sun Feb  6 16:12:57 2022
 """
 
 from matplotlib import pyplot as plt
-import OpenGL.GL 
-import OpenGL.GLU
 import math
 import pygame
 
@@ -66,10 +64,7 @@ plt.show()
 
 
 pygame.init()
-screen = pygame.display.set_mode((1024, 800), pygame.OPENGL | pygame.DOUBLEBUF)
-OpenGL.GLU.gluPerspective(45, 1024 / 800, 1, 100.0)
-OpenGL.GL.glTranslatef(0.0, 0.0, -10.0)
-OpenGL.GL.glRotatef(20, 0, -0, 0)
+screen = pygame.display.set_mode((1024, 800))
 
 clock = pygame.time.Clock()
 
@@ -86,7 +81,6 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             
-    OpenGL.GL.glClear(OpenGL.GL.GL_COLOR_BUFFER_BIT | OpenGL.GL.GL_DEPTH_BUFFER_BIT)        
     if(len(x) > 0 and len(y)  > 0): 
         pygame.draw.rect(screen, (255, 255, 255), (x.pop(0), 800 - y.pop(0), 6, 6))
     pygame.display.flip()
