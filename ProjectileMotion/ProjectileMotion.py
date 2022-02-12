@@ -6,6 +6,8 @@ Created on Sun Feb  6 16:12:57 2022
 """
 
 from matplotlib import pyplot as plt
+from OpenGL.GL import *
+from OpenGL.GLU import *
 import math
 import pygame
 
@@ -69,7 +71,7 @@ clock = pygame.time.Clock()
 x = []
 y = []
 
-draw_trajectory(70, 50, 9.8, x, y)
+draw_trajectory(600, 70, 9.8, x, y)
 
 running = True
 while running:
@@ -80,7 +82,7 @@ while running:
             running = False
             
     if(len(x) > 0 and len(y)  > 0): 
-        pygame.draw.rect(screen, (255, 255, 255), (x.pop(0), y.pop(0), 6, 6))
+        pygame.draw.rect(screen, (255, 255, 255), (x.pop(0), 800 - y.pop(0), 6, 6))
     pygame.display.update()
     
 pygame.quit()
