@@ -57,14 +57,21 @@ gravity = 9.8
 for u in u_list:
     draw_trajectory(u, theta, gravity)
 
- # Add a legend and show the graph
+  # Add a legend and show the graph
 plt.legend(['20', '40', '60'])
 plt.show()
 '''
 
 
 pygame.init()
-screen = pygame.display.set_mode((1024, 800))
+width = 1024
+height = 800
+screen = pygame.display.set_mode((width, height))
+myfont = pygame.font.SysFont("Comic Sans MS", 20)
+# apply it to text on a label
+
+# put the label object on the screen at point x=100, y=100
+
 
 clock = pygame.time.Clock()
 
@@ -76,25 +83,34 @@ draw_trajectory(600, 70, 9.8, x, y)
 running = True
 while running:
     tick = clock.tick(60) / 1000  # Returns milliseconds between each call to 'tick'. The convert time to seconds.
-    #screen.fill((0,0,0))  # Fill the screen with background color.
+    screen.fill((0,0,0))  # Fill the screen with background color.
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             
     if(len(x) > 0 and len(y)  > 0): 
-        pygame.draw.rect(screen, (255, 255, 255), (x.pop(0), 800 - y.pop(0), 6, 6))
+        xCoordinate = x.pop(0)
+        yCoordinate = y.pop(0)
+        labelX = myfont.render("X coordinate:" + str(xCoordinate), 1, (129,12,23))
+        labelY = myfont.render("Y coordinate:" + str(yCoordinate), 1, (129,12,23))
+        screen.blit(labelX, (10, 10))
+        screen.blit(labelY, (10, 40))
+        pygame.draw.rect(screen, (255, 255, 255), (xCoordinate, height - yCoordinate, 6, 6))
     pygame.display.flip()
     
 pygame.quit()
 
-'''
-# Find time intervals
-intervals = frange(0, 0.40, 0.02)
+# '''
+# # Find time intervals
+# intervals = frange(0, 0.40, 0.02)
 
 
 
-for t in intervals:
-    print(t)
-'''   
+# for t in intervals:
+#     print(t)
+# '''   
+
+
+
     
 
