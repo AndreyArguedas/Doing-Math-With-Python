@@ -38,8 +38,11 @@ def coordinatesText(surf, xCord, yCord, font):
     surf.blit(labelX, (10, 10))
     surf.blit(labelY, (10, 40))
     
-class Projectile(object):
-    def __init__(self, x, y, w, h):
+class Projectile(pygame.sprite.Sprite):
+    def __init__(self, x, y, w, h, group):
+        super().__init__(group)
+        self.image = pygame.image.load('BLANK.png').convert_alpha()
+        self.rect = self.image.get_rect(center = (x, y))
         self.__x = x
         self.__y = y
         self.__w = w
@@ -76,10 +79,55 @@ class Projectile(object):
     def draw(self, screen, screenHeight):
         pygame.draw.rect(screen, (0, 255, 0), (self.x, screenHeight - self.y, self.w, self.h))
     
+    def update(self, screenHeight):
+        self.rect.center = (self.x, screenHeight - self.y)
+        
+class CameraGroup(pygame.sprite.Group):
+	def __init__(self):
+		super().__init__()
+		self.display_surface = pygame.display.get_surface()
+
+		# camera offset 
+		self.offset = pygame.math.Vector2()
+		self.half_w = self.display_surface.get_size()[0] // 2
+		self.half_h = self.display_surface.get_size()[1] // 2
+
+		# zoom 
+		self.zoom_scale = 1
+		self.internal_surf_size = (2500,2500)
+		self.internal_surf = pygame.Surface(self.internal_surf_size, pygame.SRCALPHA)
+		self.internal_rect = self.internal_surf.get_rect(center = (self.half_w,self.half_h))
+		self.internal_surface_size_vector = pygame.math.Vector2(self.internal_surf_size)
+		self.internal_offset = pygame.math.Vector2()
+		self.internal_offset.x = self.internal_surf_size[0] // 2 - self.half_w
+		self.internal_offset.y = self.internal_surf_size[1] // 2 - self.half_h
+
+
+
+	def custom_draw(self,player):
+		
+		# self.center_target_camera(player)
+		# self.box_target_camera(player)
+		# self.keyboard_control()
+		#self.mouse_control()
+		#self.zoom_keyboard_control()
+
+		#self.internal_surf.fill('#71ddee')
+
+		# active elements
+		for sprite in sorted(self.sprites(),key = lambda sprite: sprite.rect.centery):
+			offset_pos = sprite.rect.topleft - self.offset + self.internal_offset
+			self.internal_surf.blit(sprite.image,offset_pos)
+
+		scaled_surf = pygame.transform.scale(self.internal_surf,self.internal_surface_size_vector * self.zoom_scale)
+		scaled_rect = scaled_surf.get_rect(center = (self.half_w,self.half_h))
+
+		self.display_surface.blit(scaled_surf,scaled_rect)
+
 
 pygame.init()
 
-width = 1024
+width = 800
 height = 800
 FPS = 60
 
@@ -91,9 +139,14 @@ screen = pygame.display.set_mode((width, height))
 coordinatesFont = pygame.font.SysFont("Comic Sans MS", 20)
 textSurface = pygame.Surface((350, 80))
 
-p1 = Projectile(0, height, 15, 15)
+
 
 clock = pygame.time.Clock()
+
+#Camera setup
+
+camera_group = CameraGroup()
+p1 = Projectile(0, height, 15, 15, camera_group)
 
 #Lists to store multiple coordinates
 x = []
@@ -107,13 +160,17 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            
+    
     if(len(x) > 0 and len(y)  > 0): 
         p1.x = x.pop(0)
         p1.y  = y.pop(0)
         coordinatesText(textSurface, p1.x, p1.y, coordinatesFont)
         screen.blit(textSurface, (0, 0))
         p1.draw(screen, height)
-    pygame.display.flip()
+    
+    camera_group.update(height)
+    #camera_group.draw(screen)
+    camera_group.custom_draw(p1)
+    pygame.display.update()
     
 pygame.quit() 
