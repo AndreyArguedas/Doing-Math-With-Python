@@ -37,6 +37,45 @@ def coordinatesText(surf, xCord, yCord, font):
     surf.fill((0,0,0))
     surf.blit(labelX, (10, 10))
     surf.blit(labelY, (10, 40))
+    
+class Projectile(object):
+    def __init__(self, x, y, w, h):
+        self.__x = x
+        self.__y = y
+        self.__w = w
+        self.__h = h
+        
+    @property
+    def x(self):
+        return self.__x
+    @x.setter
+    def x(self, x):
+        self.__x = x
+    
+    @property
+    def y(self):
+        return self.__y
+    @y.setter
+    def y(self, y):
+        self.__y = y
+
+    @property
+    def w(self):
+        return self.__w
+    @w.setter
+    def w(self, w):
+        self.__w = w
+        
+    @property
+    def h(self):
+        return self.__h
+    @h.setter
+    def h(self, h):
+        self.__h = h
+    
+    def draw(self, screen, screenHeight):
+        pygame.draw.rect(screen, (0, 255, 0), (self.x, screenHeight - self.y, self.w, self.h))
+    
 
 pygame.init()
 
@@ -45,13 +84,14 @@ height = 800
 FPS = 60
 
 velocity = 90
-angle = 60
+angle = 68
 gravity = 9.8
 
 screen = pygame.display.set_mode((width, height))
 coordinatesFont = pygame.font.SysFont("Comic Sans MS", 20)
 textSurface = pygame.Surface((350, 80))
 
+p1 = Projectile(0, height, 15, 15)
 
 clock = pygame.time.Clock()
 
@@ -69,11 +109,11 @@ while running:
             running = False
             
     if(len(x) > 0 and len(y)  > 0): 
-        xCoordinate = x.pop(0)
-        yCoordinate = y.pop(0)
-        coordinatesText(textSurface, xCoordinate, yCoordinate, coordinatesFont)
+        p1.x = x.pop(0)
+        p1.y  = y.pop(0)
+        coordinatesText(textSurface, p1.x, p1.y, coordinatesFont)
         screen.blit(textSurface, (0, 0))
-        pygame.draw.rect(screen, (0, 255, 0), (xCoordinate, height - yCoordinate, 15, 15))
+        p1.draw(screen, height)
     pygame.display.flip()
     
 pygame.quit() 
